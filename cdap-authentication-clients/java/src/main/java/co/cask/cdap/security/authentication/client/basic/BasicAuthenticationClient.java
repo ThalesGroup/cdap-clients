@@ -46,6 +46,8 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   private String username;
   private String password;
   private final List<Credential> credentials;
+  
+  private String knoxToken = null;
 
   /**
    * Constructs new instance.
@@ -62,13 +64,13 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
       throw new IllegalStateException("Client is already configured!");
     }
 
-    username = properties.getProperty(USERNAME_PROP_NAME);
+    username = "deepika.mehta";//properties.getProperty(USERNAME_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(username), "The username property cannot be empty.");
 
-    password = properties.getProperty(PASSWORD_PROP_NAME);
+    password = "Guavus@123";//properties.getProperty(PASSWORD_PROP_NAME);
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
-    boolean verifySSLCert = Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME, "true"));
+    boolean verifySSLCert = false;//Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME, "true"));
     setVerifySSLCert(verifySSLCert);
     if (!verifySSLCert) {
       LOG.info("Disabling SSL certificate check.");
@@ -81,6 +83,10 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   public List<Credential> getRequiredCredentials() {
     return credentials;
   }
+  
+  public void setKnoxToken(String token) {
+	  knoxToken = token;
+  }
 
   @Override
   protected Multimap<String, String> getAuthenticationHeaders() {
@@ -90,6 +96,12 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
 
     String auth = Base64.encodeBase64String(String.format("%s:%s", username, password).getBytes());
     auth = auth.replaceAll("(\r|\n)", StringUtils.EMPTY);
-    return ImmutableMultimap.of(HttpHeaders.AUTHORIZATION, AUTHENTICATION_HEADER_PREFIX_BASIC + auth);
+    Multimap<String, String> multiMap = null;
+    if (knoxToken == null) {
+    	multiMap = ImmutableMultimap.of(HttpHeaders.AUTHORIZATION, AUTHENTICATION_HEADER_PREFIX_BASIC + auth);
+    } else {
+    	multiMap = ImmutableMultimap.of(HttpHeaders.AUTHORIZATION, AUTHENTICATION_HEADER_PREFIX_BASIC + auth, "knoxToken", knoxToken);
+    }
+    return multiMap;
   }
 }

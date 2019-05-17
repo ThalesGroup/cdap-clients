@@ -78,8 +78,8 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   @Override
   public boolean isAuthEnabled() throws IOException {
     if (authEnabled == null) {
-      String strAuthURI = fetchAuthURI();
-      authEnabled = StringUtils.isNotEmpty(strAuthURI);
+      String strAuthURI = "https://192.168.133.43:10010/token1";//fetchAuthURI();
+      authEnabled = true;//StringUtils.isNotEmpty(strAuthURI);
       if (authEnabled) {
         authURI = URI.create(strAuthURI);
       }
@@ -97,9 +97,9 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
 
   @Override
   public AccessToken getAccessToken() throws IOException {
-    if (!isAuthEnabled()) {
+    /*if (!isAuthEnabled()) {
       return null;
-    }
+    }*/
 
     if (accessToken == null || isTokenExpired()) {
       long requestTime = System.currentTimeMillis();
@@ -124,6 +124,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    */
   protected URI getAuthURI() {
     return authURI;
+  }
+  
+  public void setAuthURI(URI uri) {
+	  authURI = uri;
   }
 
   public boolean isVerifySSLCert() {
@@ -155,17 +159,22 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
       throw new IllegalStateException("Connection information not set!");
     }
 
-    LOG.debug("Try to get the authentication URI from the gateway server: {}.", pingURI);
+    System.out.println("Try to get the authentication URI from the gateway server: "+ pingURI);
     HttpResponse response = HttpRequests.execute(HttpRequest.get(pingURI.toURL()).build(), getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), pingURI);
+    System.out.println("Got response " + response.getResponseCode() + " - " + response.getResponseMessage() + " from " + pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_UNAUTHORIZED) {
       return "";
     }
 
+    System.out.println(response.getResponseBodyAsString());
+    System.out.println(response.toString());
+    System.out.println(response);
+    System.out.println(response.getHeaders());
+    System.out.println(response.getResponseMessage());
     Map<String, List<String>> responseMap =
       ObjectResponse.fromJsonBody(response, AUTH_URL_RESPONSE_TYPE_TOKEN).getResponseObject();
-    LOG.debug("Response map from gateway server: {}", responseMap);
+    System.out.println("Response map from gateway server: " + responseMap);
 
     String result;
     List<String> uriList = responseMap.get(AUTH_URI_KEY);
@@ -185,10 +194,10 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
    * @throws IOException IOException in case of a problem or the connection was aborted or if the access token is not
    * received successfully from the authentication server
    */
-  private AccessToken execute(HttpRequest request) throws IOException {
+  public AccessToken execute(HttpRequest request) throws IOException {
     HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
-    LOG.debug("Got response {} - {} from {}", response.getResponseCode(), response.getResponseMessage(), pingURI);
+    System.out.println("Got response " + response.getResponseCode() +" - " + response.getResponseMessage() + " from " + pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
       throw new HttpFailureException(response.getResponseMessage(), response.getResponseCode());
     }
@@ -199,7 +208,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
 
-    LOG.debug("Response map from auth server: {}", responseMap);
+    System.out.println("Response map from auth server: " + responseMap);
 
     if (StringUtils.isEmpty(tokenValue) || StringUtils.isEmpty(tokenType) || StringUtils.isEmpty(expiresInStr)) {
       throw new IOException("Unexpected response was received from the authentication server.");
@@ -209,8 +218,9 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   }
 
   private AccessToken fetchAccessToken() throws IOException {
-    LOG.debug("Authentication is enabled in the gateway server. Authentication URI {}.", getAuthURI());
+    System.out.println("Authentication is enabled in the gateway server. Authentication URI " + getAuthURI());
 
+    
     return execute(HttpRequest.get(getAuthURI().toURL())
                      .addHeaders(getAuthenticationHeaders())
                      .build()
