@@ -159,22 +159,17 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
       throw new IllegalStateException("Connection information not set!");
     }
 
-    System.out.println("Try to get the authentication URI from the gateway server: "+ pingURI);
+    LOG.info("Try to get the authentication URI from the gateway server: "+ pingURI);
     HttpResponse response = HttpRequests.execute(HttpRequest.get(pingURI.toURL()).build(), getHttpRequestConfig());
 
-    System.out.println("Got response " + response.getResponseCode() + " - " + response.getResponseMessage() + " from " + pingURI);
+    LOG.info("Got response " + response.getResponseCode() + " - " + response.getResponseMessage() + " from " + pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_UNAUTHORIZED) {
       return "";
     }
 
-    System.out.println(response.getResponseBodyAsString());
-    System.out.println(response.toString());
-    System.out.println(response);
-    System.out.println(response.getHeaders());
-    System.out.println(response.getResponseMessage());
     Map<String, List<String>> responseMap =
       ObjectResponse.fromJsonBody(response, AUTH_URL_RESPONSE_TYPE_TOKEN).getResponseObject();
-    System.out.println("Response map from gateway server: " + responseMap);
+    LOG.info("Response map from gateway server: " + responseMap);
 
     String result;
     List<String> uriList = responseMap.get(AUTH_URI_KEY);
@@ -197,7 +192,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
   public AccessToken execute(HttpRequest request) throws IOException {
     HttpResponse response = HttpRequests.execute(request, getHttpRequestConfig());
 
-    System.out.println("Got response " + response.getResponseCode() +" - " + response.getResponseMessage() + " from " + pingURI);
+    LOG.info("Got response " + response.getResponseCode() +" - " + response.getResponseMessage() + " from " + pingURI);
     if (response.getResponseCode() != HttpURLConnection.HTTP_OK) {
       throw new HttpFailureException(response.getResponseMessage(), response.getResponseCode());
     }
@@ -208,7 +203,7 @@ public abstract class AbstractAuthenticationClient implements AuthenticationClie
     String tokenType = responseMap.get(TOKEN_TYPE_KEY);
     String expiresInStr = responseMap.get(EXPIRES_IN_KEY);
 
-    System.out.println("Response map from auth server: " + responseMap);
+    LOG.info("Response map from auth server: " + responseMap);
 
     if (StringUtils.isEmpty(tokenValue) || StringUtils.isEmpty(tokenType) || StringUtils.isEmpty(expiresInStr)) {
       throw new IOException("Unexpected response was received from the authentication server.");
