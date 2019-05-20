@@ -64,10 +64,10 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
       throw new IllegalStateException("Client is already configured!");
     }
 
-    username = "deepika.mehta";//properties.getProperty(USERNAME_PROP_NAME);
+    username = properties.getProperty(USERNAME_PROP_NAME);//"deepika.mehta";
     Preconditions.checkArgument(StringUtils.isNotEmpty(username), "The username property cannot be empty.");
 
-    password = "Guavus@123";//properties.getProperty(PASSWORD_PROP_NAME);
+    password = properties.getProperty(PASSWORD_PROP_NAME);//"Guavus@123";
     Preconditions.checkArgument(StringUtils.isNotEmpty(password), "The password property cannot be empty.");
 
     boolean verifySSLCert = false;//Boolean.valueOf(properties.getProperty(VERIFY_SSL_CERT_PROP_NAME, "true"));
