@@ -65,8 +65,8 @@ public abstract class BasicAuthenticationClientTestBase {
   public static final String EMPTY_TOKEN_USERNAME = "emptyToken";
   public static final String EXPIRED_TOKEN_USERNAME = "expiredToken";
   public static final Long TOKEN_LIFE_TIME = 86400L;
-  private static final String USERNAME_PROP_NAME = "security.auth.client.username";
-  private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
+  private static final String USERNAME_PROP_NAME = "security_auth_client_username";
+  private static final String PASSWORD_PROP_NAME = "security_auth_client_password";
   private static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
   private static final String VERIFY_SSL_CERT_PROP_VALUE = "false";
 
