@@ -40,8 +40,8 @@ public class BasicAuthenticationClient extends AbstractAuthenticationClient {
   public static final String VERIFY_SSL_CERT_PROP_NAME = "security.auth.client.verify.ssl.cert";
 
   private static final String AUTHENTICATION_HEADER_PREFIX_BASIC = "Basic ";
-  private static final String USERNAME_PROP_NAME = "security.auth.client.username";
-  private static final String PASSWORD_PROP_NAME = "security.auth.client.password";
+  private static final String USERNAME_PROP_NAME = "security_auth_client_username";
+  private static final String PASSWORD_PROP_NAME = "security_auth_client_password";
 
   private String username;
   private String password;
